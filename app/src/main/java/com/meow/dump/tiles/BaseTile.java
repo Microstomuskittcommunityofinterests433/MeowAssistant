@@ -1,0 +1,167 @@
+package com.meow.dump.tiles;
+
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
+import android.service.quicksettings.Tile;
+import android.service.quicksettings.TileService;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.meow.dump.utils.RootUtils;
+
+public abstract class BaseTile extends TileService {
+    
+    protected abstract String getScriptPath();
+    protected abstract String getModuleUrl();
+    protected abstract String getModuleName();
+    
+    @Override
+    public void onClick() {
+        super.onClick();
+        
+        if (!RootUtils.hasRootAccess()) {
+            Toast.makeText(this, "Root Required", Toast.LENGTH_LONG).show();
+            return;
+        }
+        
+        String scriptPath = getScriptPath();
+        
+        if (!RootUtils.fileExists(scriptPath)) {
+            showModuleMissingDialog();
+            return;
+        }
+        
+        if (!RootUtils.isExecutable(scriptPath)) {
+            RootUtils.makeExecutable(scriptPath);
+        }
+        
+        RootUtils.collapseStatusBar();
+        
+        final Tile tile = getQsTile();
+        final String originalLabel = getModuleName();
+        tile.setState(Tile.STATE_UNAVAILABLE);
+        tile.setLabel("Running...");
+        tile.updateTile();
+        
+        RootUtils.runAsync(new Runnable() {
+            public void run() {
+                final RootUtils.CommandResult result = RootUtils.runCommand("sh " + getScriptPath());
+                
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    public void run() {
+                        if (result.isSuccess()) {
+                            tile.setState(Tile.STATE_ACTIVE);
+                            tile.setLabel(originalLabel);
+                            tile.updateTile();
+                            
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                public void run() {
+                                    tile.setState(Tile.STATE_INACTIVE);
+                                    tile.setLabel(originalLabel);
+                                    tile.updateTile();
+                                }
+                            }, 1000);
+                        } else {
+                            tile.setState(Tile.STATE_INACTIVE);
+                            tile.setLabel(originalLabel);
+                            tile.updateTile();
+                            Toast.makeText(BaseTile.this, originalLabel + " failed", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+    }
+    
+    @Override
+    public void onStartListening() {
+        super.onStartListening();
+        Tile tile = getQsTile();
+        tile.setState(Tile.STATE_INACTIVE);
+        tile.setLabel(getModuleName());
+        tile.updateTile();
+    }
+    
+    private void showModuleMissingDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Light_Dialog_Alert);
+        
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(dpToPx(20), dpToPx(16), dpToPx(20), dpToPx(8));
+        
+        TextView title = new TextView(this);
+        title.setText(getModuleName() + " Not Installed");
+        title.setTextColor(Color.BLACK);
+        title.setTextSize(17);
+        title.setTypeface(null, android.graphics.Typeface.BOLD);
+        title.setGravity(android.view.Gravity.CENTER_HORIZONTAL);
+        layout.addView(title);
+        
+        TextView message = new TextView(this);
+        message.setText("The required module is not installed. Would you like to download it?");
+        message.setTextColor(Color.parseColor("#8E8E93"));
+        message.setTextSize(13);
+        message.setGravity(android.view.Gravity.CENTER_HORIZONTAL);
+        message.setPadding(dpToPx(8), dpToPx(12), dpToPx(8), dpToPx(16));
+        layout.addView(message);
+        
+        builder.setView(layout);
+        
+        builder.setPositiveButton("Download", new android.content.DialogInterface.OnClickListener() {
+            public void onClick(android.content.DialogInterface dialog, int which) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getModuleUrl()));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivityAndCollapse(intent);
+            }
+        });
+        
+        builder.setNegativeButton("Cancel", new android.content.DialogInterface.OnClickListener() {
+            public void onClick(android.content.DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        
+        final AlertDialog dialog = builder.create();
+        
+        dialog.setOnShowListener(new android.content.DialogInterface.OnShowListener() {
+            public void onShow(android.content.DialogInterface d) {
+                Button positive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                Button negative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                
+                if (positive != null) {
+                    positive.setTextColor(Color.parseColor("#007AFF"));
+                    positive.setAllCaps(false);
+                    positive.setTextSize(16);
+                }
+                if (negative != null) {
+                    negative.setTextColor(Color.parseColor("#007AFF"));
+                    negative.setAllCaps(false);
+                    negative.setTextSize(16);
+                }
+                
+                Window window = dialog.getWindow();
+                if (window != null) {
+                    android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
+                    bg.setCornerRadius(dpToPx(14));
+                    bg.setColor(Color.parseColor("#F2F2F7"));
+                    window.setBackgroundDrawable(bg);
+                }
+            }
+        });
+        
+        dialog.show();
+    }
+    
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
+    }
+}
