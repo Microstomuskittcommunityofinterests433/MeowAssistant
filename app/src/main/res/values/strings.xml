@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Meow</string>
+    <string name="app_title">Meow Assistant</string>
+    <string name="app_subtitle">Quick Settings Toolkit</string>
+    <string name="tile_kill_app">Kill Running Apps</string>
+    <string name="tile_pif">Fix Play Integrity</string>
+    <string name="tile_kill_gms">Kill DroidGuard Process</string>
+    <string name="tile_keybox">Update Keybox</string>
+    <string name="tile_refresh_target">Update Target Packages</string>
+    <string name="tile_import_hma">Update HMA Template</string>
+    <string name="tile_hide_lineage">Hide Lineage Props</string>
+    <string name="tile_open_webui">Open WebUI</string>
+    <string name="tile_lock_device">Lock Device</string>
+    <string name="tile_caffeine">Caffeine</string>
+    <string name="tile_recovery">Recovery</string>
+    <string name="tile_screenshot">Screenshot</string>
+    <string name="tile_clear_cache">Clear Cache</string>
+    <string name="tiles_settings">Quick Settings Tiles</string>
+    <string name="tiles_description">Meow Tiles puts useful shortcuts right in your Quick Settings panel. No need to dig through apps or menus, just swipe down and tap. Some tiles work out of the box, others need root access, and a few are built specifically for Meow\'s modules. Whether you\'re killing apps, clearing cache, keeping your screen awake, or grabbing a screenshot, everything happens instantly without leaving what you\'re doing. Built for Android, designed for convenience.</string>
+    <string name="source_code">Source Code</string>
+    <string name="telegram">Bug Report</string>
+</resources>
